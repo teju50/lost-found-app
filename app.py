@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, session
 from datetime import timedelta
 from werkzeug.utils import secure_filename
-import os, json
+import os
+import json
 
 DATA_FILE = "data.json"
 app = Flask(__name__)
@@ -25,12 +26,17 @@ def load_users():
 def save_users(users):
     with open(USER_FILE, "w") as f:
         json.dump(users, f)
+
+# ---------------- ITEMS ----------------
 def load_items():
     if os.path.exists(DATA_FILE):
         with open(DATA_FILE, "r") as f:
             return json.load(f)
     return []
 
+def save_items(items):
+    with open(DATA_FILE, "w") as f:
+        json.dump(items, f)
 
 # ---------------- HOME ----------------
 @app.route("/")
@@ -55,7 +61,7 @@ def signup():
 
     return render_template("signup.html")
 
-# ---------------- LOGIN (REMEMBER ENABLED) ----------------
+# ---------------- LOGIN ----------------
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -100,7 +106,7 @@ def upload():
         filepath = os.path.join("static/uploads", filename)
         file.save(filepath)
 
-        # 🔥 SAVE ITEM DATA
+        # SAVE ITEM DATA
         items = load_items()
 
         new_item = {
@@ -119,20 +125,21 @@ def upload():
         return redirect("/items")
 
     return render_template("upload.html")
-# ---------------- LOGOUT ----------------
-@app.route("/logout")
-def logout():
-    session.pop("user", None)
-    return redirect("/")
 
+# ---------------- ITEMS ----------------
 @app.route("/items")
 def items():
     if "user" not in session:
         return redirect("/login")
 
-    images = os.listdir("static/uploads")
-    return render_template("items.html", images=images)
+    items = load_items()
+    return render_template("items.html", items=items)
 
+# ---------------- LOGOUT ----------------
+@app.route("/logout")
+def logout():
+    session.pop("user", None)
+    return redirect("/")
 
 # ---------------- RUN ----------------
 if __name__ == "__main__":
