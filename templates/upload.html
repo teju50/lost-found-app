@@ -1,22 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Upload</title>
-</head>
-<body style="background:#0f172a;color:white;">
+<body class="center-page"></body>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
 <h2>Upload Item</h2>
 
-<input placeholder="Title"><br><br>
-<textarea placeholder="Description"></textarea><br><br>
-<input placeholder="Location"><br><br>
-<input placeholder="Contact"><br><br>
-<select>
+<form method="POST" enctype="multipart/form-data">
+
+<input name="name" placeholder="Item Name">
+
+<select name="type">
 <option>Lost</option>
 <option>Found</option>
-</select><br><br>
-<input type="file"><br><br>
+</select>
+
+<textarea name="description" placeholder="Description"></textarea>
+<input name="contact" placeholder="Contact">
+<input name="location" placeholder="Location">
+
+<input type="file" name="image">
+
 <button>Submit</button>
 
-</body>
-</html>
+</form>

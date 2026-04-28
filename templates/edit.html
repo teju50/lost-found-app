@@ -1,15 +1,22 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Edit</title>
-</head>
-<body style="background:#0f172a;color:white;">
+<body class="center-page">
+    
+</body><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
 <h2>Edit Item</h2>
 
-<input value="Title"><br><br>
-<textarea>Desc</textarea><br><br>
+<form method="POST">
+
+<input name="name" value="{{ item.name }}">
+
+<select name="type">
+<option>Lost</option>
+<option>Found</option>
+</select>
+
+<textarea name="description">{{ item.description }}</textarea>
+<input name="contact" value="{{ item.contact }}">
+<input name="location" value="{{ item.location }}">
+
 <button>Update</button>
 
-</body>
-</html>
+</form>

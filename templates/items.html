@@ -1,157 +1,21 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Back2You</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-<style>
-body {
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(to right, #eef2f7, #dfe9f3);
-    margin: 0;
-}
-
-/* HEADER */
-.header {
-    background: #4a90e2;
-    color: white;
-    text-align: center;
-    padding: 25px;
-    font-size: 32px;
-    font-weight: bold;
-}
-
-/* TAGLINE */
-.tagline {
-    text-align: center;
-    margin-top: 5px;
-    color: #555;
-    font-size: 16px;
-}
-
-/* CENTER BUTTONS */
-.top-buttons {
-    display: flex;
-    justify-content: center;
-    margin: 20px;
-    gap: 15px;
-}
-
-/* BUTTON STYLE */
-.btn {
-    padding: 12px 20px;
-    border-radius: 25px;
-    color: white;
-    text-decoration: none;
-    font-size: 16px;
-    transition: 0.3s;
-}
-
-/* BUTTON COLORS */
-.upload { background: #4a90e2; }
-.logout { background: #ff4d4d; }
-
-/* HOVER EFFECT */
-.btn:hover {
-    opacity: 0.8;
-    transform: scale(1.05);
-}
-
-/* CONTAINER */
-.container {
-    width: 80%;
-    margin: auto;
-}
-
-/* CARD */
-.card {
-    background: white;
-    padding: 20px;
-    margin: 20px 0;
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-}
-
-/* IMAGE */
-.card img {
-    width: 140px;
-    height: 140px;
-    border-radius: 12px;
-    margin-right: 20px;
-    object-fit: cover;
-}
-
-/* TEXT */
-.card h3 {
-    margin: 0;
-    font-size: 22px;
-}
-
-.card p {
-    margin: 5px 0;
-    color: #555;
-}
-
-/* ACTION BUTTONS */
-.action-btn {
-    padding: 8px 12px;
-    border-radius: 6px;
-    color: white;
-    text-decoration: none;
-    margin-right: 10px;
-    font-size: 14px;
-}
-
-.edit { background: green; }
-.delete { background: red; }
-
-.action-btn:hover {
-    opacity: 0.8;
-}
-
-</style>
-</head>
-
-<body>
-
-<div class="header">
-Back2You 📦
-</div>
-
-<div class="tagline">
-Find what you lost. Return what you found.
-</div>
-
-<!-- CENTER BUTTONS -->
-<div class="top-buttons">
-    <a href="/upload" class="btn upload">+ Upload</a>
-    <a href="/logout" class="btn logout">Logout</a>
-</div>
-
-<div class="container">
+<h2>All Items</h2>
 
 {% for item in items %}
 <div class="card">
 
-<img src="{{ url_for('static', filename=item.image) }}">
+<h3>{{ item.name }} ({{ item.type }})</h3>
+<p>{{ item.description }}</p>
+<p>{{ item.location }}</p>
+<p>{{ item.contact }}</p>
 
-<div>
-<h3>{{ item.title }}</h3>
-<p><b>{{ item.type }}</b> | {{ item.location }}</p>
-<p>📞 {{ item.contact }}</p>
+<img src="{{ url_for('static', filename='uploads/' + item.image) }}" width="150">
 
 <br>
 
-<a href="/edit/{{ item.id }}" class="action-btn edit">Edit</a>
-<a href="/delete/{{ item.id }}" class="action-btn delete">Delete</a>
-
-</div>
+<a href="/edit/{{ item.id }}">Edit</a>
+<a href="/delete/{{ item.id }}">Delete</a>
 
 </div>
 {% endfor %}
-
-</div>
-
-</body>
-</html>
