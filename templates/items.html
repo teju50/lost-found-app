@@ -1,21 +1,32 @@
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Items</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="center-page">
 
 <h2>All Items</h2>
 
 {% for item in items %}
 <div class="card">
 
-<h3>{{ item.name }} ({{ item.type }})</h3>
-<p>{{ item.description }}</p>
-<p>{{ item.location }}</p>
-<p>{{ item.contact }}</p>
+    <h3>{{ item.name }} ({{ item.type }})</h3>
+    <p>{{ item.description }}</p>
+    <p>{{ item.location }}</p>
+    <p>{{ item.contact }}</p>
 
-<img src="{{ url_for('static', filename='uploads/' + item.image) }}" width="150">
+    <img src="{{ url_for('static', filename='uploads/' + item.image) }}" width="150">
 
-<br>
+    <br><br>
 
-<a href="/edit/{{ item.id }}">Edit</a>
-<a href="/delete/{{ item.id }}">Delete</a>
+    <a href="/edit/{{ item.id }}">Edit</a>
+    <a href="/delete/{{ item.id }}">Delete</a>
 
 </div>
 {% endfor %}
+
+</body>
+</html>

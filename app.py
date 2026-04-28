@@ -83,15 +83,23 @@ def upload():
 
         file = request.files.get("image")
 
+        # ✅ FIX 1: prevent crash if no file selected
         if not file or file.filename == "":
-            return "❌ No file selected"
+            return render_template("upload.html", error="Please select a file")
 
         filename = secure_filename(file.filename)
 
-        filepath = os.path.join(UPLOAD_FOLDER, filename)
-        file.save(filepath)
+        # ✅ FIX 2: ensure folder exists (Render safe)
+        os.makedirs("static/uploads", exist_ok=True)
 
-        return "✅ Upload successful"
+        filepath = os.path.join("static/uploads", filename)
+
+        try:
+            file.save(filepath)
+        except:
+            return render_template("upload.html", error="Upload failed")
+
+        return redirect("/dashboard")  # same flow as before
 
     return render_template("upload.html")
 
@@ -101,6 +109,13 @@ def logout():
     session.pop("user", None)
     return redirect("/")
 
+@app.route("/items")
+def items():
+    if "user" not in session:
+        return redirect("/login")
+
+    images = os.listdir("static/uploads")
+    return render_template("items.html", images=images)
 # ---------------- RUN ----------------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
