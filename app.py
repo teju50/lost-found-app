@@ -8,11 +8,6 @@ import json
 import cloudinary
 import cloudinary.uploader
 
-cloudinary.config(
-    cloud_name="your_name",
-    api_key="your_key",
-    api_secret="your_secret"
-)
 
 DATA_FILE = "data.json"
 app = Flask(__name__)

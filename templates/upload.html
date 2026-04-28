@@ -26,7 +26,13 @@
 
         <input type="text" name="location" placeholder="Location" required>
 
-        <input type="file" name="image" required>
+        <!-- ✅ Image Upload -->
+        <input type="file" name="image" accept="image/*" onchange="previewImage(event)">
+
+        <br><br>
+
+        <!-- ✅ Preview -->
+        <img id="preview" width="150" style="display:none; border-radius:8px;">
 
         <br><br>
 
@@ -39,6 +45,17 @@
 <br>
 
 <a href="/dashboard">Back</a>
+
+<script>
+function previewImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;  // ✅ prevent crash
+
+    const preview = document.getElementById('preview');
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = 'block';
+}
+</script>
 
 </body>
 </html>
