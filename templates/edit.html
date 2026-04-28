@@ -81,7 +81,7 @@
 
     <!-- Show Existing Image -->
     {% if item.image %}
-        <img id="imagePreview" src="/static/uploads/{{ item.image }}" width="150">
+        <<img id="imagePreview" src="{{ item.image }}" width="150">
     {% else %}
         <img id="imagePreview" width="150" style="display:none;">
     {% endif %}

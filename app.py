@@ -4,6 +4,16 @@ from werkzeug.utils import secure_filename
 import os
 import json
 
+# ✅ ADD THIS
+import cloudinary
+import cloudinary.uploader
+
+cloudinary.config(
+    cloud_name="your_name",
+    api_key="your_key",
+    api_secret="your_secret"
+)
+
 DATA_FILE = "data.json"
 app = Flask(__name__)
 
@@ -99,12 +109,9 @@ def upload():
         if not file or file.filename == "":
             return "❌ No file selected"
 
-        filename = secure_filename(file.filename)
-
-        os.makedirs("static/uploads", exist_ok=True)
-
-        filepath = os.path.join("static/uploads", filename)
-        file.save(filepath)
+        # ✅ Cloudinary upload
+        result = cloudinary.uploader.upload(file)
+        image_url = result['secure_url']
 
         # SAVE ITEM DATA
         items = load_items()
@@ -116,7 +123,7 @@ def upload():
             "description": request.form["description"],
             "contact": request.form["contact"],
             "location": request.form["location"],
-            "image": filename
+            "image": image_url   # ✅ changed
         }
 
         items.append(new_item)
@@ -135,6 +142,7 @@ def items():
     items = load_items()
     return render_template("items.html", items=items)
 
+# ---------------- EDIT ----------------
 @app.route("/edit/<int:id>", methods=["GET", "POST"])
 def edit(id):
     if "user" not in session:
@@ -152,12 +160,19 @@ def edit(id):
         items[id]["contact"] = request.form["contact"]
         items[id]["location"] = request.form["location"]
 
+        # ✅ ADD THIS (image update)
+        file = request.files.get("image")
+        if file and file.filename != "":
+            result = cloudinary.uploader.upload(file)
+            items[id]["image"] = result['secure_url']
+
         save_items(items)
 
         return redirect("/items")
 
     return render_template("edit.html", item=items[id], id=id)
 
+# ---------------- DELETE ----------------
 @app.route("/delete/<int:id>")
 def delete(id):
     if "user" not in session:
