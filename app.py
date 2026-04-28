@@ -31,9 +31,7 @@ def load_items():
             return json.load(f)
     return []
 
-def save_items(items):
-    with open(DATA_FILE, "w") as f:
-        json.dump(items, f)
+
 # ---------------- HOME ----------------
 @app.route("/")
 def home():
