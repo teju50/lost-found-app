@@ -2,8 +2,69 @@
 <html>
 <head>
     <title>Edit Item</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #0f172a, #1e293b);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 15px;
+            width: 350px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 90%;
+            padding: 8px;
+            margin: 6px 0;
+            border-radius: 5px;
+            border: none;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #38bdf8;
+            color: black;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0ea5e9;
+        }
+
+        a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+
+        img {
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+    </style>
+
 </head>
 <body>
+
+<div class="container">
 
 <h2>Edit Item</h2>
 
@@ -16,21 +77,24 @@
     <input type="text" name="location" value="{{ item.location }}"><br>
 
     <!-- Image Upload -->
-    <input type="file" name="image" accept="image/*" onchange="previewImage(event)"><br><br>
+    <input type="file" name="image" accept="image/*" onchange="previewImage(event)"><br>
 
     <!-- Show Existing Image -->
     {% if item.image %}
-        <img id="imagePreview" src="{{ item.image }}" width="150"><br><br>
+        <img id="imagePreview" src="/static/uploads/{{ item.image }}" width="150">
     {% else %}
-        <img id="imagePreview" width="150" style="display:none;"><br><br>
+        <img id="imagePreview" width="150" style="display:none;">
     {% endif %}
 
+    <br>
     <button type="submit">Update</button>
 
 </form>
 
 <br>
 <a href="/items">Back</a>
+
+</div>
 
 <script>
 function previewImage(event) {
