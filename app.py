@@ -3,6 +3,7 @@ from datetime import timedelta
 from werkzeug.utils import secure_filename
 import os, json
 
+DATA_FILE = "data.json"
 app = Flask(__name__)
 
 # ---------------- CONFIG ----------------
@@ -24,7 +25,15 @@ def load_users():
 def save_users(users):
     with open(USER_FILE, "w") as f:
         json.dump(users, f)
+def load_items():
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "r") as f:
+            return json.load(f)
+    return []
 
+def save_items(items):
+    with open(DATA_FILE, "w") as f:
+        json.dump(items, f)
 # ---------------- HOME ----------------
 @app.route("/")
 def home():
@@ -83,26 +92,35 @@ def upload():
 
         file = request.files.get("image")
 
-        # ✅ FIX 1: prevent crash if no file selected
         if not file or file.filename == "":
-            return render_template("upload.html", error="Please select a file")
+            return "❌ No file selected"
 
         filename = secure_filename(file.filename)
 
-        # ✅ FIX 2: ensure folder exists (Render safe)
         os.makedirs("static/uploads", exist_ok=True)
 
         filepath = os.path.join("static/uploads", filename)
+        file.save(filepath)
 
-        try:
-            file.save(filepath)
-        except:
-            return render_template("upload.html", error="Upload failed")
+        # 🔥 SAVE ITEM DATA
+        items = load_items()
 
-        return redirect("/dashboard")  # same flow as before
+        new_item = {
+            "id": len(items),
+            "name": request.form["name"],
+            "type": request.form["type"],
+            "description": request.form["description"],
+            "contact": request.form["contact"],
+            "location": request.form["location"],
+            "image": filename
+        }
+
+        items.append(new_item)
+        save_items(items)
+
+        return redirect("/items")
 
     return render_template("upload.html")
-
 # ---------------- LOGOUT ----------------
 @app.route("/logout")
 def logout():
@@ -116,6 +134,14 @@ def items():
 
     images = os.listdir("static/uploads")
     return render_template("items.html", images=images)
+
+@app.route("/items")
+def items():
+    if "user" not in session:
+        return redirect("/login")
+
+    items = load_items()
+    return render_template("items.html", items=items)
 # ---------------- RUN ----------------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
