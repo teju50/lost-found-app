@@ -2,18 +2,39 @@
 <html>
 <head>
     <title>Upload Item</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
 
-<h1>Upload Lost / Found Item</h1>
+<body class="center-page">
 
-<form method="POST" enctype="multipart/form-data">
+<h1>Upload Item</h1>
 
-    <input type="file" name="image" required>
+<div class="card">
 
-    <button type="submit">Upload</button>
+    <form method="POST" enctype="multipart/form-data">
 
-</form>
+        <input type="text" name="name" placeholder="Item Name" required>
+
+        <select name="type" required>
+            <option value="Lost">Lost</option>
+            <option value="Found">Found</option>
+        </select>
+
+        <textarea name="description" placeholder="Description" required></textarea>
+
+        <input type="text" name="contact" placeholder="Contact" required>
+
+        <input type="text" name="location" placeholder="Location" required>
+
+        <input type="file" name="image" required>
+
+        <br><br>
+
+        <button type="submit">Upload</button>
+
+    </form>
+
+</div>
 
 <br>
 
