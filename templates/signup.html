@@ -1,26 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Signup</title>
+<meta charset="UTF-8">
+<title>Sign Up</title>
+<style>
+body{background:#0f172a;color:white;display:flex;justify-content:center;align-items:center;height:100vh;font-family:Poppins;}
+.box{background:#111827;padding:30px;border-radius:12px;width:300px;}
+input{width:100%;padding:10px;margin:10px 0;border:none;border-radius:8px;}
+button{width:100%;padding:10px;background:#7c3aed;color:white;border:none;border-radius:8px;}
+</style>
 </head>
-
-<body style="background:#111;color:white;display:flex;justify-content:center;align-items:center;height:100vh;font-family:Arial">
-
-<div style="background:#222;padding:40px;border-radius:15px;text-align:center;width:300px">
-
-<h1>Back2You</h1>
-<h3>Create Account</h3>
-
-<form method="POST">
-<input name="username" placeholder="Username" style="padding:10px;width:90%;margin:5px"><br>
-<input name="password" type="password" placeholder="Password" style="padding:10px;width:90%;margin:5px"><br><br>
-
-<button style="padding:10px 20px;background:lime;border:none">Signup</button>
-</form>
-
-<p><a href="/login">Back to Login</a></p>
-
+<body>
+<div class="box">
+<h2>Sign Up</h2>
+<input placeholder="Name">
+<input placeholder="Email">
+<input placeholder="Password" type="password">
+<button onclick="location.href='dashboard.html'">Create Account</button>
 </div>
-
 </body>
 </html>
