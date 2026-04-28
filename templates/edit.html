@@ -1,10 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head><title>Back2You</title></head>
+
+<body style="font-family:Segoe UI; text-align:center;">
+
+<h2>Edit Item ✏️</h2>
+
 <form method="POST">
-    <h2>Edit Item</h2>
+<input name="title" value="{{ item.title }}"><br><br>
+<input name="type" value="{{ item.type }}"><br><br>
+<input name="location" value="{{ item.location }}"><br><br>
+<input name="contact" value="{{ item.contact }}"><br><br>
 
-    <input name="title" value="{{ item.title }}"><br>
-    <input name="type" value="{{ item.type }}"><br>
-    <input name="location" value="{{ item.location }}"><br>
-    <input name="contact" value="{{ item.contact }}"><br>
-
-    <button>Update</button>
+<button style="padding:10px;background:green;color:white;">Update</button>
 </form>
+
+</body>
+</html>

@@ -1,91 +1,105 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Upload Item</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Back2You</title>
 
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #eef2f7;
-            margin: 0;
-        }
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #eef2f7, #dfe9f3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
 
-        .header {
-            background: #4a90e2;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            font-size: 20px;
-            font-weight: bold;
-        }
+/* MAIN CARD */
+.container {
+    background: white;
+    padding: 35px;
+    border-radius: 15px;
+    width: 350px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
 
-        .container {
-            width: 90%;
-            max-width: 500px;
-            margin: 20px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
+/* TITLE */
+h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
 
-        input, select {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-        }
+/* INPUTS + SELECT */
+input, select {
+    width: 95%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
 
-        .btn {
-            width: 100%;
-            padding: 10px;
-            background: #4a90e2;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
+/* FILE INPUT */
+input[type="file"] {
+    border: none;
+}
 
-        .btn:hover {
-            background: #357abd;
-        }
+/* BUTTON */
+button {
+    width: 100%;
+    padding: 12px;
+    background: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+}
 
-        .back {
-            display: block;
-            margin-top: 10px;
-            text-align: center;
-            text-decoration: none;
-            color: #4a90e2;
-        }
-    </style>
+/* HOVER */
+button:hover {
+    background: #357ABD;
+}
+
+/* BACK LINK */
+a {
+    display: inline-block;
+    margin-top: 15px;
+    color: #4a90e2;
+    text-decoration: none;
+}
+</style>
+
 </head>
 
 <body>
 
-<div class="header">📤 Upload Item</div>
-
 <div class="container">
-    <form method="POST" enctype="multipart/form-data">
 
-        <input type="text" name="title" placeholder="Item Name" required>
+<h2>📤 Upload Item</h2>
+<p>Add lost or found item details</p>
 
-        <select name="type">
-            <option value="lost">Lost</option>
-            <option value="found">Found</option>
-        </select>
+<form method="POST" enctype="multipart/form-data">
 
-        <input type="text" name="location" placeholder="Location" required>
+<input name="title" placeholder="Item Name">
 
-        <input type="text" name="contact" placeholder="Contact Number" required>
+<select name="type">
+    <option value="">Select Type</option>
+    <option value="Lost">🔍 Lost</option>
+    <option value="Found">📦 Found</option>
+</select>
 
-        <input type="file" name="image" required>
+<input name="location" placeholder="Location">
+<input name="contact" placeholder="Contact">
 
-        <button class="btn">Upload</button>
-    </form>
+<input type="file" name="image">
 
-    <a href="/items" class="back">⬅ Back to Items</a>
+<button>Upload</button>
+
+</form>
+
+<a href="/items">⬅ Back</a>
+
 </div>
 
 </body>
