@@ -1,22 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Sign Up</title>
-<style>
-body{background:#0f172a;color:white;display:flex;justify-content:center;align-items:center;height:100vh;font-family:Poppins;}
-.box{background:#111827;padding:30px;border-radius:12px;width:300px;}
-input{width:100%;padding:10px;margin:10px 0;border:none;border-radius:8px;}
-button{width:100%;padding:10px;background:#7c3aed;color:white;border:none;border-radius:8px;}
-</style>
+<title>Signup</title>
 </head>
-<body>
-<div class="box">
+<body style="background:#0f172a;color:white;">
+
 <h2>Sign Up</h2>
-<input placeholder="Name">
-<input placeholder="Email">
-<input placeholder="Password" type="password">
-<button onclick="location.href='dashboard.html'">Create Account</button>
-</div>
+
+<form method="POST">
+<input name="name" placeholder="Name"><br><br>
+<input name="email" placeholder="Email"><br><br>
+<input name="password" type="password" placeholder="Password"><br><br>
+<button type="submit">Create</button>
+</form>
+
 </body>
 </html>
