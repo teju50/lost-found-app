@@ -26,8 +26,8 @@
 
         <input type="text" name="location" placeholder="Location" required>
 
-        <!-- ✅ Image Upload -->
-        <input type="file" name="image" accept="image/*" onchange="previewImage(event)">
+        <!-- ✅ Image Upload (FIXED) -->
+        <input type="file" name="image" accept="image/*" onchange="previewImage(event)" required>
 
         <br><br>
 
@@ -49,7 +49,7 @@
 <script>
 function previewImage(event) {
     const file = event.target.files[0];
-    if (!file) return;  // ✅ prevent crash
+    if (!file) return;
 
     const preview = document.getElementById('preview');
     preview.src = URL.createObjectURL(file);

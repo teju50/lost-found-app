@@ -4,10 +4,11 @@ from werkzeug.utils import secure_filename
 import os
 import json
 
-# ✅ ADD THIS
 import cloudinary
 import cloudinary.uploader
 
+# ✅ FIXED: Use CLOUDINARY_URL from environment
+cloudinary.config(secure=True)
 
 DATA_FILE = "data.json"
 app = Flask(__name__)
@@ -104,11 +105,9 @@ def upload():
         if not file or file.filename == "":
             return "❌ No file selected"
 
-        # ✅ Cloudinary upload
         result = cloudinary.uploader.upload(file)
         image_url = result['secure_url']
 
-        # SAVE ITEM DATA
         items = load_items()
 
         new_item = {
@@ -118,7 +117,7 @@ def upload():
             "description": request.form["description"],
             "contact": request.form["contact"],
             "location": request.form["location"],
-            "image": image_url   # ✅ changed
+            "image": image_url
         }
 
         items.append(new_item)
@@ -155,7 +154,6 @@ def edit(id):
         items[id]["contact"] = request.form["contact"]
         items[id]["location"] = request.form["location"]
 
-        # ✅ ADD THIS (image update)
         file = request.files.get("image")
         if file and file.filename != "":
             result = cloudinary.uploader.upload(file)
