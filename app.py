@@ -1,16 +1,20 @@
 from flask import Flask, render_template, request, redirect, session
-import os, json
+from datetime import timedelta
 from werkzeug.utils import secure_filename
+import os, json
 
 app = Flask(__name__)
+
+# ---------------- CONFIG ----------------
 app.secret_key = "secret123"
+app.permanent_session_lifetime = timedelta(days=7)
 
 UPLOAD_FOLDER = "static/uploads"
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-
 USER_FILE = "users.json"
 
-# ---------------- USER STORAGE ----------------
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# ---------------- USERS ----------------
 def load_users():
     if os.path.exists(USER_FILE):
         with open(USER_FILE, "r") as f:
@@ -40,21 +44,21 @@ def signup():
         }
 
         save_users(users)
-
         return redirect("/login")
 
     return render_template("signup.html")
 
-# ---------------- LOGIN (FIXED MEMORY ISSUE) ----------------
+# ---------------- LOGIN (REMEMBER ENABLED) ----------------
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        users = load_users()   # 🔥 always reload latest data
+        users = load_users()
 
         email = request.form["email"]
         password = request.form["password"]
 
         if email in users and users[email]["password"] == password:
+            session.permanent = True
             session["user"] = email
             return redirect("/dashboard")
 
@@ -69,57 +73,27 @@ def dashboard():
         return redirect("/login")
     return render_template("dashboard.html")
 
-# ---------------- ITEMS ----------------
-items = []
-
+# ---------------- UPLOAD ----------------
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
     if "user" not in session:
         return redirect("/login")
 
     if request.method == "POST":
-        file = request.files["image"]
+
+        file = request.files.get("image")
+
+        if not file or file.filename == "":
+            return "❌ No file selected"
+
         filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
 
-        item = {
-            "id": len(items),
-            "name": request.form["name"],
-            "type": request.form["type"],
-            "description": request.form["description"],
-            "contact": request.form["contact"],
-            "location": request.form["location"],
-            "image": filename
-        }
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(filepath)
 
-        items.append(item)
-
-        return redirect("/items")
+        return "✅ Upload successful"
 
     return render_template("upload.html")
-
-@app.route("/items")
-def items_page():
-    return render_template("items.html", items=items)
-
-@app.route("/edit/<int:item_id>", methods=["GET", "POST"])
-def edit(item_id):
-    item = items[item_id]
-
-    if request.method == "POST":
-        item["name"] = request.form["name"]
-        item["type"] = request.form["type"]
-        item["description"] = request.form["description"]
-        item["contact"] = request.form["contact"]
-        item["location"] = request.form["location"]
-        return redirect("/items")
-
-    return render_template("edit.html", item=item)
-
-@app.route("/delete/<int:item_id>")
-def delete(item_id):
-    items.pop(item_id)
-    return redirect("/items")
 
 # ---------------- LOGOUT ----------------
 @app.route("/logout")
@@ -129,5 +103,5 @@ def logout():
 
 # ---------------- RUN ----------------
 if __name__ == "__main__":
-    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
