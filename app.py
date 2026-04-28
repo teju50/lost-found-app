@@ -1,69 +1,34 @@
-from flask import Flask, render_template, request, redirect, session
-import sqlite3
+from flask import Flask, render_template, request, redirect, session, url_for
 import os
 
 app = Flask(__name__)
 
-# ✅ IMPORTANT FIX: stable secret key (Render safe)
-app.secret_key = os.environ.get("SECRET_KEY", "fallback_secret_key_123")
+# IMPORTANT: change this in production
+app.secret_key = "back2you_super_secure_key"
 
-# ✅ session fix for mobile + Render
-app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-app.config["SESSION_COOKIE_SECURE"] = True
-
-
-# ---------------- DATABASE ----------------
-def init_db():
-    conn = sqlite3.connect("database.db")
-    c = conn.cursor()
-
-    c.execute('''CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE,
-        password TEXT
-    )''')
-
-    c.execute('''CREATE TABLE IF NOT EXISTS items (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT,
-        type TEXT,
-        item TEXT,
-        description TEXT
-    )''')
-
-    conn.commit()
-    conn.close()
-
-init_db()
-
+# Fake user storage (for now)
+users = {}
 
 # ---------------- HOME ----------------
 @app.route("/")
 def home():
-    if "user" in session:
-        return redirect("/dashboard")
-    return redirect("/login")
+    return render_template("index.html")
 
 
 # ---------------- SIGNUP ----------------
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
-        username = request.form["username"]
+        name = request.form["name"]
+        email = request.form["email"]
         password = request.form["password"]
 
-        conn = sqlite3.connect("database.db")
-        c = conn.cursor()
+        users[email] = {
+            "name": name,
+            "password": password
+        }
 
-        try:
-            c.execute("INSERT INTO users (username, password) VALUES (?, ?)",
-                      (username, password))
-            conn.commit()
-        except:
-            return "User already exists"
-
-        conn.close()
-        return redirect("/login")
+        return redirect(url_for("login"))
 
     return render_template("signup.html")
 
@@ -72,57 +37,55 @@ def signup():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = request.form["username"]
+        email = request.form["email"]
         password = request.form["password"]
 
-        conn = sqlite3.connect("database.db")
-        c = conn.cursor()
-
-        c.execute("SELECT * FROM users WHERE username=? AND password=?",
-                  (username, password))
-        user = c.fetchone()
-        conn.close()
-
-        if user:
-            session.clear()
-            session["user"] = username
-            return redirect("/dashboard")
+        if email in users and users[email]["password"] == password:
+            session["user"] = email
+            return redirect(url_for("dashboard"))
+        else:
+            return "Invalid credentials"
 
     return render_template("login.html")
+
+
+# ---------------- DASHBOARD ----------------
+@app.route("/dashboard")
+def dashboard():
+    if "user" not in session:
+        return redirect(url_for("login"))
+
+    return render_template("dashboard.html")
+
+
+# ---------------- UPLOAD ----------------
+@app.route("/upload")
+def upload():
+    if "user" not in session:
+        return redirect(url_for("login"))
+
+    return render_template("upload.html")
+
+
+# ---------------- ITEM PAGE ----------------
+@app.route("/item")
+def item():
+    return render_template("item.html")
+
+
+# ---------------- EDIT PAGE ----------------
+@app.route("/edit")
+def edit():
+    return render_template("edit.html")
 
 
 # ---------------- LOGOUT ----------------
 @app.route("/logout")
 def logout():
-    session.clear()
-    return redirect("/login")
+    session.pop("user", None)
+    return redirect(url_for("login"))
 
 
-# ---------------- DASHBOARD ----------------
-@app.route("/dashboard", methods=["GET", "POST"])
-def dashboard():
-    if "user" not in session:
-        return redirect("/login")
-
-    conn = sqlite3.connect("database.db")
-    c = conn.cursor()
-
-    if request.method == "POST":
-        item_type = request.form["type"]
-        item = request.form["item"]
-        desc = request.form["description"]
-
-        c.execute("INSERT INTO items (username, type, item, description) VALUES (?, ?, ?, ?)",
-                  (session["user"], item_type, item, desc))
-        conn.commit()
-
-    c.execute("SELECT * FROM items ORDER BY id DESC")
-    items = c.fetchall()
-
-    conn.close()
-
-    return render_template("dashboard.html", user=session["user"], items=items)
-
-
+# ---------------- RUN SERVER ----------------
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)

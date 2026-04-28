@@ -1,28 +1,106 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Upload Item</title>
+<title>Back2You</title>
+
 <style>
-body{background:#0f172a;color:white;font-family:Poppins;}
-.form{max-width:500px;margin:auto;padding:20px;}
-input,textarea,select{width:100%;padding:10px;margin:10px 0;border:none;border-radius:8px;}
-button{width:100%;padding:10px;background:#2563eb;color:white;border:none;border-radius:8px;}
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #eef2f7, #dfe9f3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* MAIN CARD */
+.container {
+    background: white;
+    padding: 35px;
+    border-radius: 15px;
+    width: 350px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+/* TITLE */
+h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+/* INPUTS + SELECT */
+input, select {
+    width: 95%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+/* FILE INPUT */
+input[type="file"] {
+    border: none;
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    padding: 12px;
+    background: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* HOVER */
+button:hover {
+    background: #357ABD;
+}
+
+/* BACK LINK */
+a {
+    display: inline-block;
+    margin-top: 15px;
+    color: #4a90e2;
+    text-decoration: none;
+}
 </style>
+
 </head>
+
 <body>
-<div class="form">
-<h2>Upload Item</h2>
-<input placeholder="Title">
-<textarea placeholder="Description"></textarea>
-<input placeholder="Location">
-<input placeholder="Contact">
-<select>
-<option>Lost</option>
-<option>Found</option>
+
+<div class="container">
+
+<h2>📤 Upload Item</h2>
+<p>Add lost or found item details</p>
+
+<form method="POST" enctype="multipart/form-data">
+
+<input name="title" placeholder="Item Name">
+
+<select name="type">
+    <option value="">Select Type</option>
+    <option value="Lost">🔍 Lost</option>
+    <option value="Found">📦 Found</option>
 </select>
-<input type="file">
-<button>Submit</button>
+
+<input name="location" placeholder="Location">
+<input name="contact" placeholder="Contact">
+
+<input type="file" name="image">
+
+<button>Upload</button>
+
+</form>
+
+<a href="/items">⬅ Back</a>
+
 </div>
+
 </body>
 </html>
