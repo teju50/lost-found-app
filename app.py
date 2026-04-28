@@ -133,13 +133,7 @@ def items():
     images = os.listdir("static/uploads")
     return render_template("items.html", images=images)
 
-@app.route("/items")
-def items():
-    if "user" not in session:
-        return redirect("/login")
 
-    items = load_items()
-    return render_template("items.html", items=items)
 # ---------------- RUN ----------------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
