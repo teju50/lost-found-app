@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Back2You Dashboard</title>
+</head>
+
+<body style="margin:0;font-family:Arial;background:#0f0f0f;color:white">
+
+<div style="text-align:center;padding:20px;background:#1c1c1c">
+<h1>Back2You</h1>
+<h3>Welcome {{user}}</h3>
+<a href="/logout" style="color:red">Logout</a>
+</div>
+
+<!-- UPLOAD SECTION -->
+<div style="text-align:center;margin-top:20px">
+
+<h2>Upload Lost / Found Item</h2>
+
+<form method="POST">
+<select name="type" style="padding:10px">
+<option>Lost</option>
+<option>Found</option>
+</select><br><br>
+
+<input name="item" placeholder="Item Name" style="padding:10px;width:250px"><br><br>
+<input name="description" placeholder="Description" style="padding:10px;width:250px"><br><br>
+
+<button style="padding:10px 20px;background:cyan;border:none;font-size:16px">
+Upload
+</button>
+
+</form>
+
+</div>
+
+<!-- FEED -->
+<div style="margin-top:30px;text-align:center">
+
+<h2>Lost & Found Feed</h2>
+
+<div style="max-height:400px;overflow-y:scroll;padding:10px">
+
+{% for i in items %}
+<div style="background:#222;margin:10px;padding:10px;border-radius:10px">
+<b>{{i[2]}}</b> - {{i[3]}} <br>
+<small>by {{i[1]}}</small>
+</div>
+{% endfor %}
+
+</div>
+
+</div>
+
+</body>
+</html>

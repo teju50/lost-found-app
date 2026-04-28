@@ -1,123 +1,128 @@
 from flask import Flask, render_template, request, redirect, session
-from flask_sqlalchemy import SQLAlchemy
+import sqlite3
 import os
 
 app = Flask(__name__)
-app.secret_key = "secret123"
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///items.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# ✅ IMPORTANT FIX: stable secret key (Render safe)
+app.secret_key = os.environ.get("SECRET_KEY", "fallback_secret_key_123")
 
-db = SQLAlchemy(app)
+# ✅ session fix for mobile + Render
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"] = True
 
-# ---------------- USERS (temporary storage) ----------------
-users = {"admin": "1234"}
 
-# ---------------- DATABASE MODEL ----------------
-class Item(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100))
-    type = db.Column(db.String(20))
-    location = db.Column(db.String(100))
-    contact = db.Column(db.String(50))
-    image = db.Column(db.String(100))
+# ---------------- DATABASE ----------------
+def init_db():
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
 
-with app.app_context():
-    db.create_all()
+    c.execute('''CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE,
+        password TEXT
+    )''')
 
-# ---------------- LOGIN ----------------
-@app.route('/', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+    c.execute('''CREATE TABLE IF NOT EXISTS items (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT,
+        type TEXT,
+        item TEXT,
+        description TEXT
+    )''')
 
-        if username in users and users[username] == password:
-            session['user'] = username
-            return redirect('/items')
+    conn.commit()
+    conn.close()
 
-    return render_template('login.html')
+init_db()
+
+
+# ---------------- HOME ----------------
+@app.route("/")
+def home():
+    if "user" in session:
+        return redirect("/dashboard")
+    return redirect("/login")
+
 
 # ---------------- SIGNUP ----------------
-@app.route('/signup', methods=['GET', 'POST'])
+@app.route("/signup", methods=["GET", "POST"])
 def signup():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
 
-        if username in users:
-            return "User already exists!"
+        conn = sqlite3.connect("database.db")
+        c = conn.cursor()
 
-        users[username] = password
-        return redirect('/')
+        try:
+            c.execute("INSERT INTO users (username, password) VALUES (?, ?)",
+                      (username, password))
+            conn.commit()
+        except:
+            return "User already exists"
 
-    return render_template('signup.html')
+        conn.close()
+        return redirect("/login")
+
+    return render_template("signup.html")
+
+
+# ---------------- LOGIN ----------------
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        conn = sqlite3.connect("database.db")
+        c = conn.cursor()
+
+        c.execute("SELECT * FROM users WHERE username=? AND password=?",
+                  (username, password))
+        user = c.fetchone()
+        conn.close()
+
+        if user:
+            session.clear()
+            session["user"] = username
+            return redirect("/dashboard")
+
+    return render_template("login.html")
+
 
 # ---------------- LOGOUT ----------------
-@app.route('/logout')
+@app.route("/logout")
 def logout():
-    session.pop('user', None)
-    return redirect('/')
+    session.clear()
+    return redirect("/login")
 
-# ---------------- SHOW ITEMS ----------------
-@app.route('/items')
-def items():
-    if 'user' not in session:
-        return redirect('/')
 
-    all_items = Item.query.all()
-    return render_template('items.html', items=all_items)
+# ---------------- DASHBOARD ----------------
+@app.route("/dashboard", methods=["GET", "POST"])
+def dashboard():
+    if "user" not in session:
+        return redirect("/login")
 
-# ---------------- UPLOAD ----------------
-@app.route('/upload', methods=['GET', 'POST'])
-def upload():
-    if 'user' not in session:
-        return redirect('/')
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
 
-    if request.method == 'POST':
-        file = request.files['image']
-        filename = file.filename
-        file.save(os.path.join('static', filename))
+    if request.method == "POST":
+        item_type = request.form["type"]
+        item = request.form["item"]
+        desc = request.form["description"]
 
-        new_item = Item(
-            title=request.form['title'],
-            type=request.form['type'],
-            location=request.form['location'],
-            contact=request.form['contact'],
-            image=filename
-        )
+        c.execute("INSERT INTO items (username, type, item, description) VALUES (?, ?, ?, ?)",
+                  (session["user"], item_type, item, desc))
+        conn.commit()
 
-        db.session.add(new_item)
-        db.session.commit()
+    c.execute("SELECT * FROM items ORDER BY id DESC")
+    items = c.fetchall()
 
-        return redirect('/items')
+    conn.close()
 
-    return render_template('upload.html')
+    return render_template("dashboard.html", user=session["user"], items=items)
 
-# ---------------- DELETE ----------------
-@app.route('/delete/<int:id>')
-def delete(id):
-    item = Item.query.get(id)
-    db.session.delete(item)
-    db.session.commit()
-    return redirect('/items')
 
-# ---------------- EDIT ----------------
-@app.route('/edit/<int:id>', methods=['GET', 'POST'])
-def edit(id):
-    item = Item.query.get(id)
-
-    if request.method == 'POST':
-        item.title = request.form['title']
-        item.type = request.form['type']
-        item.location = request.form['location']
-        item.contact = request.form['contact']
-
-        db.session.commit()
-        return redirect('/items')
-
-    return render_template('edit.html', item=item)
-
-# ---------------- RUN ----------------
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run()

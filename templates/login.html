@@ -1,64 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Back2You</title>
-
-<style>
-body {
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(to right, #4a90e2, #6fb1fc);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-.box {
-    background: white;
-    padding: 40px;
-    border-radius: 15px;
-    width: 320px;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-h2 {
-    font-size: 28px;
-}
-input {
-    width: 90%;
-    padding: 12px;
-    margin: 10px 0;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-}
-button {
-    width: 100%;
-    padding: 12px;
-    background: #4a90e2;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-}
-a {
-    color: #4a90e2;
-}
-</style>
-
+<title>Login - Back2You</title>
 </head>
 
-<body>
+<body style="background:#111;color:white;display:flex;justify-content:center;align-items:center;height:100vh;font-family:Arial">
 
-<div class="box">
-<h2>Back2You 🔍</h2>
-<p>Find what you lost</p>
+<div style="background:#222;padding:40px;border-radius:15px;text-align:center;width:300px">
+
+<h1>Back2You</h1>
+<h3>Login</h3>
 
 <form method="POST">
-<input name="username" placeholder="Username">
-<input name="password" type="password" placeholder="Password">
-<button>Login</button>
+<input name="username" placeholder="Username" style="padding:10px;width:90%;margin:5px"><br>
+<input name="password" type="password" placeholder="Password" style="padding:10px;width:90%;margin:5px"><br><br>
+
+<button style="padding:10px 20px;background:cyan;border:none">Login</button>
 </form>
 
-<p>New user? <a href="/signup">Sign Up</a></p>
+<p>New user? <a href="/signup">Signup</a></p>
 
 </div>
 
