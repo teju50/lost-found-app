@@ -1,53 +1,163 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Back2You Dashboard</title>
+<style>
+body{
+margin:0;
+font-family:Arial, sans-serif;
+background:#f4f6f9;
+}
+header{
+background:#111827;
+color:white;
+padding:15px;
+text-align:center;
+font-size:22px;
+font-weight:bold;
+}
+.container{
+max-width:1000px;
+margin:auto;
+padding:20px;
+}
+.card{
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
+margin-bottom:20px;
+}
+input, textarea, select{
+width:100%;
+padding:10px;
+margin-top:8px;
+margin-bottom:15px;
+border-radius:8px;
+border:1px solid #ddd;
+}
+button{
+background:#2563eb;
+color:white;
+border:none;
+padding:12px;
+width:100%;
+border-radius:8px;
+font-size:16px;
+cursor:pointer;
+}
+button:hover{
+background:#1d4ed8;
+}
+.list{
+margin-top:20px;
+}
+.item{
+background:white;
+padding:15px;
+border-radius:10px;
+margin-bottom:15px;
+display:flex;
+gap:15px;
+align-items:flex-start;
+box-shadow:0 2px 8px rgba(0,0,0,0.05);
+}
+.item img{
+width:80px;
+height:80px;
+object-fit:cover;
+border-radius:8px;
+}
+.badge{
+padding:5px 10px;
+border-radius:20px;
+font-size:12px;
+color:white;
+}
+.lost{background:#ef4444;}
+.found{background:#22c55e;}
+.topbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+.scroll{
+max-height:400px;
+overflow-y:auto;
+padding-right:5px;
+}
+.icon{
+font-size:18px;
+margin-right:5px;
+}
+</style>
 </head>
+<body>
 
-<body style="margin:0;font-family:Arial;background:#0f0f0f;color:white">
+<header>Back2You - Lost & Found Portal</header>
 
-<div style="text-align:center;padding:20px;background:#1c1c1c">
-<h1>Back2You</h1>
-<h3>Welcome {{user}}</h3>
-<a href="/logout" style="color:red">Logout</a>
-</div>
+<div class="container">
 
-<!-- UPLOAD SECTION -->
-<div style="text-align:center;margin-top:20px">
+<div class="card">
+<h3>📍 Upload Lost / Found Item</h3>
+<form>
 
-<h2>Upload Lost / Found Item</h2>
+<label>Item Title</label>
+<input type="text" placeholder="Enter item name" required>
 
-<form method="POST">
-<select name="type" style="padding:10px">
+<label>Description</label>
+<textarea placeholder="Describe the item"></textarea>
+
+<label>Location</label>
+<input type="text" placeholder="Where it was lost/found">
+
+<label>Contact Number</label>
+<input type="text" placeholder="Your contact number">
+
+<label>Status</label>
+<select>
 <option>Lost</option>
 <option>Found</option>
-</select><br><br>
+</select>
 
-<input name="item" placeholder="Item Name" style="padding:10px;width:250px"><br><br>
-<input name="description" placeholder="Description" style="padding:10px;width:250px"><br><br>
+<label>Upload Image</label>
+<input type="file">
 
-<button style="padding:10px 20px;background:cyan;border:none;font-size:16px">
-Upload
-</button>
+<button type="submit">Upload</button>
 
 </form>
-
 </div>
 
-<!-- FEED -->
-<div style="margin-top:30px;text-align:center">
-
-<h2>Lost & Found Feed</h2>
-
-<div style="max-height:400px;overflow-y:scroll;padding:10px">
-
-{% for i in items %}
-<div style="background:#222;margin:10px;padding:10px;border-radius:10px">
-<b>{{i[2]}}</b> - {{i[3]}} <br>
-<small>by {{i[1]}}</small>
+<div class="card">
+<div class="topbar">
+<h3>📦 Recent Posts</h3>
 </div>
-{% endfor %}
 
+<div class="scroll list">
+
+<div class="item">
+<img src="https://via.placeholder.com/80" />
+<div>
+<span class="badge lost">Lost</span>
+<h4>Mobile Phone</h4>
+<p>Location: Bus Stand</p>
+<p>Contact: 9876543210</p>
+</div>
+</div>
+
+<div class="item">
+<img src="https://via.placeholder.com/80" />
+<div>
+<span class="badge found">Found</span>
+<h4>Wallet</h4>
+<p>Location: College Gate</p>
+<p>Contact: 9123456780</p>
+</div>
+</div>
+
+</div>
 </div>
 
 </div>
