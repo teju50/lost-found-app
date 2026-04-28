@@ -7,7 +7,7 @@
 
 <h2>Edit Item</h2>
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
 
     <input type="text" name="name" value="{{ item.name }}"><br>
     <input type="text" name="type" value="{{ item.type }}"><br>
@@ -15,12 +15,30 @@
     <input type="text" name="contact" value="{{ item.contact }}"><br>
     <input type="text" name="location" value="{{ item.location }}"><br>
 
+    <!-- Image Upload -->
+    <input type="file" name="image" accept="image/*" onchange="previewImage(event)"><br><br>
+
+    <!-- Show Existing Image -->
+    {% if item.image %}
+        <img id="imagePreview" src="{{ item.image }}" width="150"><br><br>
+    {% else %}
+        <img id="imagePreview" width="150" style="display:none;"><br><br>
+    {% endif %}
+
     <button type="submit">Update</button>
 
 </form>
 
 <br>
 <a href="/items">Back</a>
+
+<script>
+function previewImage(event) {
+    const preview = document.getElementById('imagePreview');
+    preview.src = URL.createObjectURL(event.target.files[0]);
+    preview.style.display = 'block';
+}
+</script>
 
 </body>
 </html>
