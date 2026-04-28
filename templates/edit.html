@@ -1,22 +1,26 @@
-<body class="center-page">
-    
-</body><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Item</title>
+</head>
+<body>
 
 <h2>Edit Item</h2>
 
 <form method="POST">
 
-<input name="name" value="{{ item.name }}">
+    <input type="text" name="name" value="{{ item.name }}"><br>
+    <input type="text" name="type" value="{{ item.type }}"><br>
+    <input type="text" name="description" value="{{ item.description }}"><br>
+    <input type="text" name="contact" value="{{ item.contact }}"><br>
+    <input type="text" name="location" value="{{ item.location }}"><br>
 
-<select name="type">
-<option>Lost</option>
-<option>Found</option>
-</select>
-
-<textarea name="description">{{ item.description }}</textarea>
-<input name="contact" value="{{ item.contact }}">
-<input name="location" value="{{ item.location }}">
-
-<button>Update</button>
+    <button type="submit">Update</button>
 
 </form>
+
+<br>
+<a href="/items">Back</a>
+
+</body>
+</html>

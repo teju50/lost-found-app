@@ -135,6 +135,42 @@ def items():
     items = load_items()
     return render_template("items.html", items=items)
 
+@app.route("/edit/<int:id>", methods=["GET", "POST"])
+def edit(id):
+    if "user" not in session:
+        return redirect("/login")
+
+    items = load_items()
+
+    if id >= len(items):
+        return "Item not found"
+
+    if request.method == "POST":
+        items[id]["name"] = request.form["name"]
+        items[id]["type"] = request.form["type"]
+        items[id]["description"] = request.form["description"]
+        items[id]["contact"] = request.form["contact"]
+        items[id]["location"] = request.form["location"]
+
+        save_items(items)
+
+        return redirect("/items")
+
+    return render_template("edit.html", item=items[id], id=id)
+
+@app.route("/delete/<int:id>")
+def delete(id):
+    if "user" not in session:
+        return redirect("/login")
+
+    items = load_items()
+
+    if id < len(items):
+        items.pop(id)
+        save_items(items)
+
+    return redirect("/items")
+
 # ---------------- LOGOUT ----------------
 @app.route("/logout")
 def logout():
