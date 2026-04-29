@@ -7,8 +7,13 @@ import json
 import cloudinary
 import cloudinary.uploader
 
-# ✅ FIXED: Use CLOUDINARY_URL from environment
-cloudinary.config(secure=True)
+# ✅ FIXED: Explicitly read credentials from environment variables
+cloudinary.config(
+    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.environ.get("CLOUDINARY_API_KEY"),
+    api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
+    secure=True
+)
 
 DATA_FILE = "data.json"
 app = Flask(__name__)
@@ -54,17 +59,13 @@ def home():
 def signup():
     if request.method == "POST":
         users = load_users()
-
         email = request.form["email"]
-
         users[email] = {
             "name": request.form["name"],
             "password": request.form["password"]
         }
-
         save_users(users)
         return redirect("/login")
-
     return render_template("signup.html")
 
 # ---------------- LOGIN ----------------
@@ -72,17 +73,13 @@ def signup():
 def login():
     if request.method == "POST":
         users = load_users()
-
         email = request.form["email"]
         password = request.form["password"]
-
         if email in users and users[email]["password"] == password:
             session.permanent = True
             session["user"] = email
             return redirect("/dashboard")
-
         return "❌ Invalid login"
-
     return render_template("login.html")
 
 # ---------------- DASHBOARD ----------------
@@ -99,9 +96,7 @@ def upload():
         return redirect("/login")
 
     if request.method == "POST":
-
         file = request.files.get("image")
-
         if not file or file.filename == "":
             return "❌ No file selected"
 
@@ -109,7 +104,6 @@ def upload():
         image_url = result['secure_url']
 
         items = load_items()
-
         new_item = {
             "id": len(items),
             "name": request.form["name"],
@@ -119,10 +113,8 @@ def upload():
             "location": request.form["location"],
             "image": image_url
         }
-
         items.append(new_item)
         save_items(items)
-
         return redirect("/items")
 
     return render_template("upload.html")
@@ -132,7 +124,6 @@ def upload():
 def items():
     if "user" not in session:
         return redirect("/login")
-
     items = load_items()
     return render_template("items.html", items=items)
 
@@ -143,7 +134,6 @@ def edit(id):
         return redirect("/login")
 
     items = load_items()
-
     if id >= len(items):
         return "Item not found"
 
@@ -160,7 +150,6 @@ def edit(id):
             items[id]["image"] = result['secure_url']
 
         save_items(items)
-
         return redirect("/items")
 
     return render_template("edit.html", item=items[id], id=id)
@@ -172,11 +161,9 @@ def delete(id):
         return redirect("/login")
 
     items = load_items()
-
     if id < len(items):
         items.pop(id)
         save_items(items)
-
     return redirect("/items")
 
 # ---------------- LOGOUT ----------------
