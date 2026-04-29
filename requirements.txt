@@ -2,3 +2,4 @@ Flask
 gunicorn
 Werkzeug
 cloudinary
+pymongo[srv]

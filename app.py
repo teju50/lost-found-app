@@ -1,13 +1,11 @@
 from flask import Flask, render_template, request, redirect, session
 from datetime import timedelta
-from werkzeug.utils import secure_filename
 import os
-import json
-
 import cloudinary
 import cloudinary.uploader
+from pymongo import MongoClient
+from bson.objectid import ObjectId
 
-# ✅ FIXED: Explicitly read credentials from environment variables
 cloudinary.config(
     cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
     api_key=os.environ.get("CLOUDINARY_API_KEY"),
@@ -15,39 +13,15 @@ cloudinary.config(
     secure=True
 )
 
-DATA_FILE = "data.json"
 app = Flask(__name__)
-
-# ---------------- CONFIG ----------------
-app.secret_key = "secret123"
+app.secret_key = os.environ.get("SECRET_KEY", "secret123")
 app.permanent_session_lifetime = timedelta(days=7)
 
-UPLOAD_FOLDER = "static/uploads"
-USER_FILE = "users.json"
-
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-# ---------------- USERS ----------------
-def load_users():
-    if os.path.exists(USER_FILE):
-        with open(USER_FILE, "r") as f:
-            return json.load(f)
-    return {}
-
-def save_users(users):
-    with open(USER_FILE, "w") as f:
-        json.dump(users, f)
-
-# ---------------- ITEMS ----------------
-def load_items():
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "r") as f:
-            return json.load(f)
-    return []
-
-def save_items(items):
-    with open(DATA_FILE, "w") as f:
-        json.dump(items, f)
+# MongoDB connection
+client = MongoClient(os.environ.get("MONGO_URI"))
+db = client["back2you"]
+users_col = db["users"]
+items_col = db["items"]
 
 # ---------------- HOME ----------------
 @app.route("/")
@@ -58,13 +32,14 @@ def home():
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
-        users = load_users()
         email = request.form["email"]
-        users[email] = {
+        if users_col.find_one({"email": email}):
+            return "❌ Email already registered"
+        users_col.insert_one({
+            "email": email,
             "name": request.form["name"],
             "password": request.form["password"]
-        }
-        save_users(users)
+        })
         return redirect("/login")
     return render_template("signup.html")
 
@@ -72,10 +47,10 @@ def signup():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        users = load_users()
         email = request.form["email"]
         password = request.form["password"]
-        if email in users and users[email]["password"] == password:
+        user = users_col.find_one({"email": email, "password": password})
+        if user:
             session.permanent = True
             session["user"] = email
             return redirect("/dashboard")
@@ -103,18 +78,16 @@ def upload():
         result = cloudinary.uploader.upload(file)
         image_url = result['secure_url']
 
-        items = load_items()
-        new_item = {
-            "id": len(items),
+        items_col.insert_one({
             "name": request.form["name"],
             "type": request.form["type"],
             "description": request.form["description"],
             "contact": request.form["contact"],
             "location": request.form["location"],
-            "image": image_url
-        }
-        items.append(new_item)
-        save_items(items)
+            "image": image_url,
+            "uploaded_by": session["user"]
+        })
+
         return redirect("/items")
 
     return render_template("upload.html")
@@ -124,46 +97,46 @@ def upload():
 def items():
     if "user" not in session:
         return redirect("/login")
-    items = load_items()
-    return render_template("items.html", items=items)
+    all_items = list(items_col.find())
+    for item in all_items:
+        item["id"] = str(item["_id"])
+    return render_template("items.html", items=all_items)
 
 # ---------------- EDIT ----------------
-@app.route("/edit/<int:id>", methods=["GET", "POST"])
+@app.route("/edit/<id>", methods=["GET", "POST"])
 def edit(id):
     if "user" not in session:
         return redirect("/login")
 
-    items = load_items()
-    if id >= len(items):
+    item = items_col.find_one({"_id": ObjectId(id)})
+    if not item:
         return "Item not found"
 
     if request.method == "POST":
-        items[id]["name"] = request.form["name"]
-        items[id]["type"] = request.form["type"]
-        items[id]["description"] = request.form["description"]
-        items[id]["contact"] = request.form["contact"]
-        items[id]["location"] = request.form["location"]
-
+        update = {
+            "name": request.form["name"],
+            "type": request.form["type"],
+            "description": request.form["description"],
+            "contact": request.form["contact"],
+            "location": request.form["location"],
+        }
         file = request.files.get("image")
         if file and file.filename != "":
             result = cloudinary.uploader.upload(file)
-            items[id]["image"] = result['secure_url']
+            update["image"] = result['secure_url']
 
-        save_items(items)
+        items_col.update_one({"_id": ObjectId(id)}, {"$set": update})
         return redirect("/items")
 
-    return render_template("edit.html", item=items[id], id=id)
+    item["id"] = str(item["_id"])
+    return render_template("edit.html", item=item, id=item["id"])
 
 # ---------------- DELETE ----------------
-@app.route("/delete/<int:id>")
+@app.route("/delete/<id>")
 def delete(id):
     if "user" not in session:
         return redirect("/login")
-
-    items = load_items()
-    if id < len(items):
-        items.pop(id)
-        save_items(items)
+    items_col.delete_one({"_id": ObjectId(id)})
     return redirect("/items")
 
 # ---------------- LOGOUT ----------------
