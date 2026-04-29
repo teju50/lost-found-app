@@ -2,7 +2,6 @@
 <html>
 <head>
     <title>All Items</title>
-
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
@@ -18,7 +17,7 @@
     <p>{{ item.location }}</p>
     <p>{{ item.contact }}</p>
 
-    <img src="{{ url_for('static', filename='uploads/' + item.image) }}" width="150">
+    <img src="{{ item.image }}" width="150">
 
     <br><br>
 
